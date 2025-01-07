@@ -16,34 +16,34 @@ import {
     return true;
   }
   
-  function isValidMockName(name: string): boolean {
+  function isValidName(name: string): boolean {
     return isValidString(name, 3, 30);
   }
   
-  function isValidMockItemRequested(item: string): boolean {
+  function isValidItemRequested(item: string): boolean {
     return isValidString(item, 2, 100);
   }
   
-  export function isValidMockStatus(status: any): boolean {
+  export function isValidStatus(status: any): boolean {
     return (
       isValidString(status) &&
       Object.values(RequestStatus).includes(status as RequestStatus)
     );
   }
   
-  export function isValidMockId(id: any): boolean {
+  export function isValidId(id: any): boolean {
     return typeof id === "number" && id > 0;
   }
   
-  export function validateMockCreateItemRequest(
+  export function validateCreateItemRequest(
     request: any
   ): CreateItemRequest | null {
     if (!request.requestorName || !request.itemRequested) {
       return null;
     }
     if (
-      !isValidMockName(request.requestorName) ||
-      !isValidMockItemRequested(request.itemRequested)
+      !isValidName(request.requestorName) ||
+      !isValidItemRequested(request.itemRequested)
     ) {
       return null;
     }
@@ -54,13 +54,13 @@ import {
     return newCreateItemRequest;
   }
   
-  export function validateMockEditStatusRequest(
+  export function validateEditStatusRequest(
     request: any
   ): EditStatusRequest | null {
     if (!request.id || !request.status) {
       return null;
     }
-    if (!isValidMockId(request.id) || !isValidMockStatus(request.status)) {
+    if (!isValidId(request.id) || !isValidStatus(request.status)) {
       return null;
     }
     const newEditStatusRequest: EditStatusRequest = {

@@ -17,7 +17,7 @@ import {
   isValidStatus,
   validateCreateItemRequest,
   validateEditStatusRequest,
-} from "@/lib/validation/requests";
+} from "@/lib/validation/request";
 
 export async function getItemRequests(
   status: string | null,
@@ -54,6 +54,7 @@ export async function getItemRequests(
 }
 
 export async function createNewRequest(request: any): Promise<ItemRequest> {
+    //Validate request
     const validatedRequest = validateCreateItemRequest(request);
     if (!validatedRequest) {
     throw new InvalidInputError("created item request");
@@ -62,41 +63,56 @@ export async function createNewRequest(request: any): Promise<ItemRequest> {
     const db = await connectToDatabase();
     const collection = db.collection("requests");
 
-    // Get the highest existing id and increment by 1
-    const highestRequest = await collection
-    .find()
-    .sort({ id: -1 })
-    .limit(1)
-    .toArray();
+    const requests = await collection.find().toArray();
 
-    const nextId = highestRequest.length > 0 ? Number(highestRequest[0].id) + 1 : 1;
+    //Convert document to ItemRequest object
+    const typedRequests = requests.map(doc => ({
+        id: doc.id,
+        requestorName: doc.requestorName,
+        itemRequested: doc.itemRequested,
+        requestCreatedDate: new Date(doc.requestCreatedDate),
+        lastEditedDate: new Date(doc.lastEditedDate),
+        status: doc.status
+    } as ItemRequest));
+
+    const nextId = generateId(typedRequests)
 
     const date = new Date();
     const newRequest: ItemRequest = {
-    id: nextId,
-    requestorName: validatedRequest.requestorName,
-    itemRequested: validatedRequest.itemRequested,
-    requestCreatedDate: date,
-    lastEditedDate: date,
-    status: RequestStatus.PENDING,
+        id: nextId,
+        requestorName: validatedRequest.requestorName,
+        itemRequested: validatedRequest.itemRequested,
+        requestCreatedDate: date,
+        lastEditedDate: date,
+        status: RequestStatus.PENDING,
     };
 
     await collection.insertOne(newRequest);
     return newRequest;
 }
 
-export function editStatusRequest(request: any): EditStatusRequest {
-  const validatedRequest = validateEditStatusRequest(request);
-  if (!validatedRequest) {
-    throw new InvalidInputError("edit item request");
-  }
-  const editedItemRequest = ItemRequests.find(
-    (req) => req.id === validatedRequest.id
-  );
-  if (!editedItemRequest) {
-    throw new InvalidInputError("edit item ID");
-  }
-  editedItemRequest.status = validatedRequest.status;
-  editedItemRequest.lastEditedDate = new Date();
-  return editedItemRequest;
+export async function editStatusRequest(request: any): Promise<EditStatusRequest> {
+    //Validate request
+    const validatedRequest = validateEditStatusRequest(request);
+    if (!validatedRequest) {
+        throw new InvalidInputError("edit item request");
+    }
+
+    //Connect and edit in db
+    const db = await connectToDatabase();
+    const collection = db.collection("requests");
+    const editedItemRequest = await collection.findOneAndUpdate(
+        { id: validatedRequest.id },
+        { $set: { status: validatedRequest.status, lastEditedDate: new Date() } },
+        { returnDocument: "after" }
+    );
+
+    if (!editedItemRequest?.value) {
+        throw new InvalidInputError("edit item ID");
+    }
+
+    return {
+        id: editedItemRequest.value.id,
+        status: editedItemRequest.value.status
+    } as EditStatusRequest;
 }
