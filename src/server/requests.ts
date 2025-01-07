@@ -53,23 +53,36 @@ export async function getItemRequests(
     return paginate(filteredRequests, page, PAGINATION_PAGE_SIZE).data;
 }
 
-export function createNewRequest(request: any): ItemRequest {
-  const validatedRequest = validateCreateItemRequest(request);
-  if (!validatedRequest) {
+export async function createNewRequest(request: any): Promise<ItemRequest> {
+    const validatedRequest = validateCreateItemRequest(request);
+    if (!validatedRequest) {
     throw new InvalidInputError("created item request");
-  }
-  const date = new Date();
-  const newRequest: ItemRequest = {
-    id: generateId(ItemRequests),
+    }
+
+    const db = await connectToDatabase();
+    const collection = db.collection("requests");
+
+    // Get the highest existing id and increment by 1
+    const highestRequest = await collection
+    .find()
+    .sort({ id: -1 })
+    .limit(1)
+    .toArray();
+
+    const nextId = highestRequest.length > 0 ? Number(highestRequest[0].id) + 1 : 1;
+
+    const date = new Date();
+    const newRequest: ItemRequest = {
+    id: nextId,
     requestorName: validatedRequest.requestorName,
     itemRequested: validatedRequest.itemRequested,
     requestCreatedDate: date,
     lastEditedDate: date,
     status: RequestStatus.PENDING,
-  };
+    };
 
-  ItemRequests.push(newRequest);
-  return newRequest;
+    await collection.insertOne(newRequest);
+    return newRequest;
 }
 
 export function editStatusRequest(request: any): EditStatusRequest {
