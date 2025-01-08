@@ -8,10 +8,7 @@ import {
     EditStatusRequest,
     ItemRequest,
     RequestStatus } from "@/lib/types/request";
-import {
-  generateId,
-  sortItemRequests,
-} from "@/lib/utils/requests";
+import { generateId, sortItemRequests} from "@/lib/utils/requests";
 import paginate from "@/lib/utils/pagination";
 import {
   isValidStatus,
@@ -23,38 +20,35 @@ export async function getItemRequests(
   status: string | null,
   page: number
 ): Promise<ItemRequest[]> {
+
     const db = await connectToDatabase();
     const collection = db.collection("requests");
 
     const query: any = {};
     if (status && isValidStatus(status)) {
+        console.log("status", status)
         query.status = status;
     }
 
-    const sortedRequests = await collection.find(query)
-      .sort({ requestCreatedDate: -1 })
-      .toArray();
+    const requests = await collection.find(query).toArray();
 
-    // Map MongoDB documents to ItemRequest type
-    const typedRequests = sortedRequests.map(doc => ({
-      id: doc.id,
-      requestorName: doc.requestorName,
-      itemRequested: doc.itemRequested,
-      requestCreatedDate: new Date(doc.requestCreatedDate),
-      lastEditedDate: new Date(doc.lastEditedDate),
-      status: doc.status
+    // Convert documents to ItemRequest object
+    const typedRequests = requests.map(doc => ({
+        id: doc.id,
+        requestorName: doc.requestorName,
+        itemRequested: doc.itemRequested,
+        requestCreatedDate: new Date(doc.requestCreatedDate),
+        lastEditedDate: new Date(doc.lastEditedDate),
+        status: doc.status
     } as ItemRequest));
+
+    const sortedRequests = sortItemRequests(typedRequests)
     
-    let filteredRequests = typedRequests;
-    if (status && isValidStatus(status)) {
-      filteredRequests = filteredRequests.filter((req) => req.status === status);
-    }
-    
-    return paginate(filteredRequests, page, PAGINATION_PAGE_SIZE).data;
+    return paginate(sortedRequests, page, PAGINATION_PAGE_SIZE).data;
 }
 
 export async function createNewRequest(request: any): Promise<ItemRequest> {
-    //Validate request
+    // Validate request
     const validatedRequest = validateCreateItemRequest(request);
     if (!validatedRequest) {
     throw new InvalidInputError("created item request");
@@ -65,7 +59,7 @@ export async function createNewRequest(request: any): Promise<ItemRequest> {
 
     const requests = await collection.find().toArray();
 
-    //Convert document to ItemRequest object
+    // Convert documents to ItemRequest object
     const typedRequests = requests.map(doc => ({
         id: doc.id,
         requestorName: doc.requestorName,
@@ -92,27 +86,27 @@ export async function createNewRequest(request: any): Promise<ItemRequest> {
 }
 
 export async function editStatusRequest(request: any): Promise<EditStatusRequest> {
-    //Validate request
+    // Validate request
     const validatedRequest = validateEditStatusRequest(request);
     if (!validatedRequest) {
         throw new InvalidInputError("edit item request");
     }
 
-    //Connect and edit in db
     const db = await connectToDatabase();
     const collection = db.collection("requests");
+    
     const editedItemRequest = await collection.findOneAndUpdate(
         { id: validatedRequest.id },
         { $set: { status: validatedRequest.status, lastEditedDate: new Date() } },
         { returnDocument: "after" }
     );
 
-    if (!editedItemRequest?.value) {
+    if (!editedItemRequest) {
         throw new InvalidInputError("edit item ID");
     }
 
     return {
-        id: editedItemRequest.value.id,
-        status: editedItemRequest.value.status
+        id: editedItemRequest.id,
+        status: editedItemRequest.status
     } as EditStatusRequest;
 }
