@@ -45,26 +45,26 @@ export default function RequestTable({ data, onStatusChange }: RequestTableProps
                 <tbody className="bg-white divide-y divide-gray-200">
                     {data.map((row) => (
                         <tr key={row.id} className="block md:table-row">
-                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <span className="inline-block md:hidden font-medium mr-2">Name:</span>
                                 {row.requestorName}
                             </td>
-                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <span className="inline-block md:hidden font-medium mr-2">Item Requested:</span>
                                 {row.itemRequested}
                             </td>
-                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <span className="inline-block md:hidden font-medium mr-2">Created:</span>
                                 {`${row.requestCreatedDate.getMonth() + 1}/${row.requestCreatedDate.getDate()}/${row.requestCreatedDate.getFullYear()}`}
                             </td>
-                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <span className="inline-block md:hidden font-medium mr-2">Updated:</span>
                                 {row.lastEditedDate ? 
                                     `${row.lastEditedDate.getMonth() + 1}/${row.lastEditedDate.getDate()}/${row.lastEditedDate.getFullYear()}` :
                                     'N/A'
                                 }
                             </td>
-                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm">
                                 <span className="inline-block md:hidden font-medium mr-2">Status:</span>
                                 <div className="w-full md:w-40">
                                     <Dropdown
