@@ -1,5 +1,7 @@
 import { RequestStatus } from "@/lib/types/request";
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 export type DropdownOption = {
     label: string;
@@ -48,12 +50,12 @@ export default function Dropdown({
     <div className="relative w=full">
       <div
         onClick={toggleDropdown}
-        className={`py-1 px-2 border rounded-md w-full cursor-pointer ${isOpen ? 'border-blue-500' : ''}`}
+        className={`py-2.5 px-2 border rounded-md w-full cursor-pointer ${isOpen ? 'border-blue-500' : ''} hover:bg-[#EFF6FF]`}
       >
         <StatusIndicator option={selectedValue} />
 
-        {isOpen ? <span className="absolute right-3 top-1 transform pointer-events-none">&and;</span>
-                : <span className="absolute right-3 top-1 transform pointer-events-none">&or;</span>}
+        {isOpen ? <FontAwesomeIcon icon={faChevronUp} className="absolute right-1 top-3.5 transform pointer-events-none" />
+                : <FontAwesomeIcon icon={faChevronDown} className="absolute right-1 top-3.5 transform pointer-events-none" />}
       </div>
       {isOpen && (
         <div className="absolute z-10 bg-white border rounded-md shadow-lg mt-1 w-full">
@@ -61,7 +63,7 @@ export default function Dropdown({
             <div
               key={option.value}
               onClick={() => handleSelect(option)}
-              className={`flex items-center py-2 px-2 cursor-pointer ${
+              className={`flex items-center py-1.5 px-2 cursor-pointer ${
                 selectedValue.value === option.value ? "bg-" + option.color + "-light" : "hover:bg-gray-200"
               }`}
             >

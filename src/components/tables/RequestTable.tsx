@@ -66,7 +66,7 @@ export default function RequestTable({ data, onStatusChange }: RequestTableProps
                             </td>
                             <td className="block md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 <span className="inline-block md:hidden font-medium mr-2">Status:</span>
-                                <div className="w-full md:w-32">
+                                <div className="w-full md:w-40">
                                     <Dropdown
                                         options={statusOptions}
                                         initialValue={getStatusOption(row.status)}
