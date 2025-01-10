@@ -47,18 +47,17 @@ export default function Dropdown({
   };
 
   return (
-    <div className="relative w=full">
+    <div className="relative w-full">
       <div
         onClick={toggleDropdown}
         className={`py-2.5 px-2 border rounded-md w-full cursor-pointer ${isOpen ? 'border-blue-500' : ''} hover:bg-[#EFF6FF]`}
       >
         <StatusIndicator option={selectedValue} />
-
         {isOpen ? <FontAwesomeIcon icon={faChevronUp} className="absolute right-1 top-3.5 transform pointer-events-none" />
                 : <FontAwesomeIcon icon={faChevronDown} className="absolute right-1 top-3.5 transform pointer-events-none" />}
       </div>
       {isOpen && (
-        <div className="absolute z-10 bg-white border rounded-md shadow-lg mt-1 w-full">
+        <div className="absolute z-50 bg-white border rounded-md shadow-lg mt-1 w-full">
           {options.map((option) => (
             <div
               key={option.value}

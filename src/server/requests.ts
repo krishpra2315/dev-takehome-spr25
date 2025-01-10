@@ -7,6 +7,7 @@ import { InvalidInputError } from "@/lib/errors/inputExceptions";
 import { 
     EditStatusRequest,
     ItemRequest,
+    PaginatedItemRequests,
     RequestStatus } from "@/lib/types/request";
 import { generateId, sortItemRequests} from "@/lib/utils/requests";
 import paginate from "@/lib/utils/pagination";
@@ -19,7 +20,7 @@ import {
 export async function getItemRequests(
   status: string | null,
   page: number
-): Promise<ItemRequest[]> {
+): Promise<PaginatedItemRequests> {
 
     const db = await connectToDatabase();
     const collection = db.collection("requests");
@@ -43,8 +44,13 @@ export async function getItemRequests(
     } as ItemRequest));
 
     const sortedRequests = sortItemRequests(typedRequests)
+    const paginatedRequests = paginate(sortedRequests, page, PAGINATION_PAGE_SIZE)
     
-    return paginate(sortedRequests, page, PAGINATION_PAGE_SIZE).data;
+    return {
+        requests: paginatedRequests.data,
+        totalPages: paginatedRequests.totalPages,
+        totalRecords: paginatedRequests.totalRecords
+    };
 }
 
 export async function createNewRequest(request: any): Promise<ItemRequest> {
