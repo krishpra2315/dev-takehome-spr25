@@ -14,6 +14,12 @@ export interface ItemRequest {
   status: RequestStatus;
 }
 
+export interface PaginatedItemRequests {
+  requests: ItemRequest[];
+  totalPages: number;
+  totalRecords: number;
+}
+
 export interface CreateItemRequest {
   requestorName: string;
   itemRequested: string;
