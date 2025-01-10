@@ -1,4 +1,3 @@
-import { RequestStatus } from "@/lib/types/request";
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons";
