@@ -27,7 +27,7 @@ const getStatusOption = (status: string): DropdownOption => {
 export default function RequestTable({ data, onStatusChange, currentPage, totalPages, onPageChange }: RequestTableProps) {
     return (
         <div className="w-full overflow-visible flex flex-col gap-4">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 hidden md:table-header-group border-t border-gray-200">
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
